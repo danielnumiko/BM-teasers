@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BM Teaser Cards — Current vs Proposed</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { font-size: 112.5%; line-height: 1.5556; } /* 1rem = 18px */
+
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 { font-weight: 500; margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; margin: 0; padding: 0; }
+
+    /* ── EXHIBITION BRAND COLOURS ── */
+    .teaser--hawaii  .teaser__title strong { color: #c8a600; }
+    .teaser--hawaii  .teaser__defacer      { background-color: #c8a600; border-color: #c8a600; color: #000; }
+    .teaser--hawaii  .teaser__wrapper:hover::before { background-color: #c8a600 !important; }
+    .teaser--hawaii  .teaser__wrapper:hover { color: #000; }
+    .teaser--hawaii  .teaser__wrapper:hover .teaser__title strong { color: inherit; }
+    .teaser--hawaii  .teaser__wrapper:hover .teaser__defacer { color: #c8a600; }
+
+    .teaser--samurai .teaser__title strong { color: #d44000; }
+    .teaser--samurai .teaser__defacer      { background-color: #d44000; border-color: #d44000; color: #000; }
+    .teaser--samurai .teaser__wrapper:hover::before { background-color: #d44000 !important; }
+    .teaser--samurai .teaser__wrapper:hover { color: #000; }
+    .teaser--samurai .teaser__wrapper:hover .teaser__title strong { color: inherit; }
+    .teaser--samurai .teaser__wrapper:hover .teaser__defacer { color: #d44000; }
+
+    .teaser--bayeux  .teaser__title strong { color: #BF955F; }
+    .teaser--bayeux  .teaser__defacer      { background-color: #BF955F; border-color: #BF955F; color: #000; }
+    .teaser--bayeux  .teaser__wrapper:hover::before { background-color: #BF955F !important; }
+    .teaser--bayeux  .teaser__wrapper:hover { color: #000; }
+    .teaser--bayeux  .teaser__wrapper:hover .teaser__title strong { color: inherit; }
+    .teaser--bayeux  .teaser__wrapper:hover .teaser__defacer { color: #BF955F; }
+
+    /* ── LAYOUT ── */
+    .wrap { max-width: 1460px; margin: 0 auto; padding: 0 20px; }
+
+    .l-grid {
+      display: grid;
+      column-gap: 3.3333rem; /* 60px — matches live site ≥1024px */
+      row-gap: 2.2222rem;    /* 40px */
+    }
+    .l-grid--2col { grid-template-columns: 1fr 1fr; }
+    .l-grid--3col { grid-template-columns: 1fr 1fr 1fr; }
+
+    /* ── TEASER CARD BASE ── */
+    .teaser {
+      background-color: #1d1d1d;
+      border: 1px solid #1d1d1d;
+      color: #fff;
+      display: block;
+      height: 100%;
+      text-decoration: none;
+      position: relative;
+    }
+
+    /* Raise hovered card above neighbours so the ::before halo isn't clipped */
+    .teaser:hover { z-index: 1; }
+
+    .teaser__wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    /* Expanding hover backdrop */
+    .teaser__wrapper::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: #1d1d1d;
+      transition: inset 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+                  background-color 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+      z-index: 0;
+    }
+
+    .teaser__wrapper:hover::before {
+      inset: -15px;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── IMAGE CONTAINER ── */
+    .teaser__image-container {
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+    }
+
+    /* 16:9 default */
+    .teaser__image-container::before {
+      content: "";
+      display: block;
+      padding-bottom: 56.25%;
+    }
+
+    .teaser__image-container img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    .teaser__wrapper:hover .teaser__image-container img {
+      transform: scale(1.05);
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* Gradient overlay on image */
+    .teaser__image-container::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent, #000);
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+      z-index: 1;
+    }
+
+    .teaser__wrapper:hover .teaser__image-container::after {
+      opacity: 0.4;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── CONTENT ── */
+    .teaser__content {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      padding: 30px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .teaser__content-push { margin-bottom: auto; }
+
+    /* ── TITLE ── */
+    .teaser__title {
+      font-size: 1.2222rem; /* 22px */
+      line-height: 1.3636;  /* ~30px */
+      font-weight: 500;
+      margin: 0 0 1rem;
+    }
+
+    .teaser__title strong { font-weight: inherit; }
+
+    /* Animated underline on hover */
+    .teaser__title > span {
+      background-image: linear-gradient(currentColor, currentColor);
+      background-position: 0 100%;
+      background-repeat: no-repeat;
+      background-size: 0 2px;
+      padding-bottom: 3px;
+      transition: background-size 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    .teaser__wrapper:hover .teaser__title > span {
+      background-size: 100% 2px;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── EXHIBITION CARD: landscape row ── */
+    .teaser--exhibition .teaser__wrapper { flex-direction: row; }
+
+    .teaser--exhibition .teaser__content,
+    .teaser--exhibition .teaser__image-container { width: 50%; }
+
+    /* Portrait image aspect ratio for exhibition cards */
+    .teaser--exhibition .teaser__image-container::before { padding-bottom: 133%; }
+
+    /* Larger title for exhibitions (×2 grid) */
+    .teaser--exhibition .teaser__title {
+      font-size: 1.6667rem; /* 30px */
+      line-height: 1.2667;  /* 38px */
+    }
+
+    /* ×1 full-width single card: title scales up to match Figma spec */
+    .teaser--x1 .teaser__title {
+      font-size: 2.4444rem; /* 44px */
+      line-height: 1.1818;  /* 52px */
+    }
+
+    /* ×1 exhibition: override portrait ratio — 16:9 keeps card ~400px tall at full width */
+    .teaser--x1.teaser--exhibition .teaser__image-container::before {
+      padding-bottom: 56.25%;
+    }
+
+    /* Exhibition hover: text → black, bg → brand colour (via brand class) */
+    .teaser--exhibition .teaser__wrapper:hover { color: #000; }
+    .teaser--exhibition .teaser__wrapper:hover::before { background-color: #fff; } /* fallback (no brand class) */
+    /* Ensure title strong (which has brand colour) also turns black to avoid same-colour-on-same-colour */
+    .teaser--exhibition .teaser__wrapper:hover .teaser__title strong { color: inherit; }
+
+    /* Exhibition footer */
+    .teaser__footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    .teaser--exhibition .teaser__meta--footer {
+      flex-direction: column;
+      margin: 20px 20px 0 0;
+    }
+
+    /* ── META ── */
+    .teaser__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 0;
+      font-size: 0.7778rem; /* 14px */
+      font-weight: 500;
+      pointer-events: none;
+    }
+
+    .teaser__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .icon {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      opacity: 0.45;
+    }
+
+    /* Meta at top of event card */
+    .teaser__wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 1.5rem;
+    }
+
+    .teaser__meta-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* ── DEFACER BADGE ── */
+    .teaser__defacer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 1px solid #5c5c5c;
+      color: #000;
+      font-size: 0.7778rem; /* 14px */
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.3;
+      flex-shrink: 0;
+      pointer-events: none;
+      position: relative;
+      z-index: 6;
+      transition: background-color 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+                  color 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    /* Exhibition defacer sits in footer (static flow) */
+    .teaser--exhibition .teaser__defacer { position: static; }
+
+    /* Event defacer sits in .teaser__wrap flex row */
+    .teaser__defacer--event { margin-left: 12px; }
+
+    /* Defacer inverts on hover (non-exhibition cards) */
+    .teaser__wrapper:hover .teaser__defacer {
+      background-color: #000;
+      border-color: #5c5c5c;
+      color: #fff;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── SUMMARY ── */
+    .teaser__summary {
+      color: #a5a5a5;
+      font-size: 1rem;
+      margin: 0 0 1rem;
+      transition: color 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    .teaser--hawaii .teaser__wrapper:hover .teaser__summary,
+    .teaser--samurai .teaser__wrapper:hover .teaser__summary,
+    .teaser--bayeux .teaser__wrapper:hover .teaser__summary {
+      color: #000;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── CTA BUTTON ── */
+    .teaser__button {
+      display: block;
+      width: 100%;
+      padding: 10px 60px 10px 20px;
+      background-color: #000;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpolyline fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' points='6,3 11,8 6,13'/%3E%3C/svg%3E");
+      background-position: center right 20px;
+      background-repeat: no-repeat;
+      border: 1px solid transparent;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 1em;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+                  color 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    .teaser__wrapper:hover .teaser__button {
+      background-color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpolyline fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' points='6,3 11,8 6,13'/%3E%3C/svg%3E");
+      color: #000;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── PROTOTYPE CHROME ── */
+    .proto-header {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 32px 40px;
+    }
+
+    .proto-section {
+      padding: 64px 0;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin: 0;
+    }
+
+    .proto-section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .proto-h2 {
+      font-size: 1.6667rem;
+      line-height: 1.2667;
+      font-weight: 500;
+    }
+
+    .priority-badge {
+      padding: 2px 8px;
+      font-size: 0.6111rem;
+      font-weight: 500;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .priority-high   { background: #450a0a; color: #f87171; }
+    .priority-medium { background: #431407; color: #fb923c; }
+
+    .proto-desc {
+      font-size: 0.7778rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      margin: 0 0 40px;
+      max-width: 640px;
+    }
+
+    .variant-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .label-pill {
+      padding: 4px 12px;
+      font-size: 0.6667rem;
+      font-weight: 500;
+      border-radius: 9999px;
+    }
+    .label-pill--current  { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+    .label-pill--proposed { background: #f0c000; color: #000; }
+
+    .label-desc {
+      font-size: 0.6667rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .mb-grid { margin-bottom: 48px; }
+
+    /* ── TABS ── */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      margin-bottom: 32px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.7778rem;
+      font-weight: 500;
+      margin-bottom: -1px;
+      padding: 8px 24px 8px 0;
+      text-align: left;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab-btn + .tab-btn { padding-left: 24px; }
+
+    .tab-btn.is-active { border-bottom-color: #fff; color: #fff; }
+
+    .tab-panel { display: none; }
+    .tab-panel.is-active { display: block; }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PROTOTYPE HEADER -->
+  <header class="proto-header">
+    <div class="wrap">
+      <p style="font-size:0.6111rem; font-weight:500; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin:0 0 12px;">British Museum · Reworking of teasers v2 · 6 January 2026</p>
+      <h1 style="font-size:1.7778rem; line-height:1.25; font-weight:500; margin:0 0 6px;">Teaser cards — Current vs Proposed</h1>
+      <p style="font-size:0.7778rem; font-weight:500; color:rgba(255,255,255,0.5); margin:0;">Three comparisons based on high and medium priority roadmap items.</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════════════
+         1. EXHIBITION TEASERS
+    ════════════════════════════════════════════════════ -->
+    <section class="proto-section">
+      <div class="wrap">
+
+        <div class="proto-section-title">
+          <h2 class="proto-h2">Exhibition teasers</h2>
+          <span class="priority-badge priority-high">High priority</span>
+        </div>
+        <p class="proto-desc">Add one sentence of copy and price. Move to portrait format (×3 per row). Replace defacer with metadata; only retain defacer for "Sold out" / "Final weeks" edge cases.</p>
+
+        <div class="tab-group">
+          <div class="tab-bar">
+            <button class="tab-btn" data-tab="current">Current</button>
+            <button class="tab-btn is-active" data-tab="proposed">Proposed</button>
+          </div>
+
+          <div class="tab-panel" data-tab="current">
+
+        <ul class="l-grid l-grid--2col mb-grid">
+
+          <!-- Hawai'i -->
+          <li>
+            <a href="#" class="teaser teaser--exhibition teaser--hawaii">
+              <div class="teaser__wrapper">
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title">
+                      <span><strong>Hawai'i: a kingdom crossing oceans</strong></span>
+                    </h3>
+                  </div>
+                  <footer class="teaser__footer">
+                    <ul class="teaser__meta teaser__meta--footer">
+                      <li class="teaser__meta-item"><span>Experience</span></li>
+                      <li class="teaser__meta-item"><span>15 January – 25 May 2026</span></li>
+                    </ul>
+                    <div class="teaser__defacer">Book<br>now</div>
+                  </footer>
+                </div>
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Hawaii_teaser_1920x1080.jpg" alt="Hawai'i: a kingdom crossing oceans">
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Samurai -->
+          <li>
+            <a href="#" class="teaser teaser--exhibition teaser--samurai">
+              <div class="teaser__wrapper">
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title">
+                      <span><strong>Samurai</strong></span>
+                    </h3>
+                  </div>
+                  <footer class="teaser__footer">
+                    <ul class="teaser__meta teaser__meta--footer">
+                      <li class="teaser__meta-item"><span>Exhibition</span></li>
+                      <li class="teaser__meta-item"><span>3 February – 4 May 2026</span></li>
+                    </ul>
+                    <div class="teaser__defacer">Book<br>now</div>
+                  </footer>
+                </div>
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Samurai_teaser_2000x1160px.jpg" alt="Samurai">
+                </div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+          </div><!-- /tab-panel current -->
+
+          <div class="tab-panel is-active" data-tab="proposed">
+
+        <ul class="l-grid l-grid--3col mb-grid">
+
+          <!-- Hawai'i — with "Last few days" defacer -->
+          <li>
+            <a href="#" class="teaser teaser--hawaii">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Hawaii_teaser_1920x1080.jpg" alt="Hawai'i: a kingdom crossing oceans">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <ul class="teaser__meta" style="margin-bottom:10px;">
+                      <li class="teaser__meta-item"><span>Experience</span></li>
+                    </ul>
+                    <div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:12px;">
+                      <h3 class="teaser__title" style="margin:0; flex:1;">
+                        <span><strong>Hawai'i: a kingdom crossing oceans</strong></span>
+                      </h3>
+                      <div class="teaser__defacer" style="margin-top:4px;">Last<br>few days</div>
+                    </div>
+                    <ul class="teaser__meta" style="margin-bottom:12px;">
+                      <li class="teaser__meta-item"><span>15 January – 25 May 2026</span></li>
+                      <li class="teaser__meta-item"><span>£7 – £16 · Members free</span></li>
+                    </ul>
+                    <p class="teaser__summary">Be swept away by the extraordinary history and dazzling artistry of this Pacific Island nation.</p>
+                  </div>
+                  <span class="teaser__button">Find out more</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Samurai — no defacer -->
+          <li>
+            <a href="#" class="teaser teaser--samurai">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Samurai_teaser_2000x1160px.jpg" alt="Samurai">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <ul class="teaser__meta" style="margin-bottom:10px;">
+                      <li class="teaser__meta-item"><span>Exhibition</span></li>
+                    </ul>
+                    <h3 class="teaser__title"><span><strong>Samurai</strong></span></h3>
+                    <ul class="teaser__meta" style="margin-bottom:12px;">
+                      <li class="teaser__meta-item"><span>3 February – 4 May 2026</span></li>
+                      <li class="teaser__meta-item"><span>£10 – £22 · Members free</span></li>
+                    </ul>
+                    <p class="teaser__summary">Discover the world of the Japanese warrior and the shifting history of the samurai across 1,000 years.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Bayeux Tapestry — no defacer, coming soon -->
+          <li>
+            <a href="#" class="teaser teaser--bayeux">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Bayeux_Tapestry_teaser_1920x1080.jpg" alt="The Bayeux Tapestry">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <ul class="teaser__meta" style="margin-bottom:10px;">
+                      <li class="teaser__meta-item"><span>Exhibition</span></li>
+                    </ul>
+                    <h3 class="teaser__title"><span><strong>The Bayeux Tapestry</strong></span></h3>
+                    <ul class="teaser__meta" style="margin-bottom:12px;">
+                      <li class="teaser__meta-item"><span>Coming September 2026</span></li>
+                      <li class="teaser__meta-item"><span>Tickets from £20</span></li>
+                    </ul>
+                    <p class="teaser__summary">See the legendary medieval tapestry at the British Museum — the only time it will have left Normandy in over 900 years.</p>
+                  </div>
+                  <span class="teaser__button">Find out more</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+          </div><!-- /tab-panel proposed -->
+        </div><!-- /tab-group -->
+
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════════
+         2. EXHIBITION TEASER — SINGLE CARD (×1)
+    ════════════════════════════════════════════════════ -->
+    <section class="proto-section">
+      <div class="wrap">
+
+        <div class="proto-section-title">
+          <h2 class="proto-h2">Exhibition teaser — single card</h2>
+          <span class="priority-badge priority-high">High priority</span>
+        </div>
+        <p class="proto-desc">The Bayeux Tapestry shown as a single full-width card in current and proposed formats.</p>
+
+        <div class="tab-group">
+          <div class="tab-bar">
+            <button class="tab-btn" data-tab="current">Current</button>
+            <button class="tab-btn is-active" data-tab="proposed">Proposed</button>
+          </div>
+
+          <div class="tab-panel" data-tab="current">
+        <div class="mb-grid">
+          <a href="#" class="teaser teaser--exhibition teaser--x1 teaser--bayeux">
+            <div class="teaser__wrapper">
+              <div class="teaser__content">
+                <div class="teaser__content-push">
+                  <h3 class="teaser__title">
+                    <span><strong>The Bayeux Tapestry</strong></span>
+                  </h3>
+                </div>
+                <footer class="teaser__footer">
+                  <ul class="teaser__meta teaser__meta--footer">
+                    <li class="teaser__meta-item"><span>Exhibition</span></li>
+                    <li class="teaser__meta-item"><span>Coming September 2026</span></li>
+                  </ul>
+                  <div class="teaser__defacer">Find<br>out more</div>
+                </footer>
+              </div>
+              <div class="teaser__image-container">
+                <img src="../../Desktop/Exhibitions and events _ British Museum_files/Bayeux_Tapestry_teaser_1920x1080.jpg" alt="The Bayeux Tapestry">
+              </div>
+            </div>
+          </a>
+        </div>
+
+          </div><!-- /tab-panel current -->
+
+          <div class="tab-panel is-active" data-tab="proposed">
+        <a href="#" class="teaser teaser--exhibition teaser--x1 teaser--bayeux">
+          <div class="teaser__wrapper">
+            <div class="teaser__content">
+              <div class="teaser__content-push">
+                <ul class="teaser__meta" style="margin-bottom:10px;">
+                  <li class="teaser__meta-item"><span>Special exhibition</span></li>
+                </ul>
+                <h3 class="teaser__title">
+                  <span><strong>The Bayeux Tapestry</strong></span>
+                </h3>
+                <ul class="teaser__meta" style="margin-bottom:12px;">
+                  <li class="teaser__meta-item"><span>Coming September 2026</span></li>
+                  <li class="teaser__meta-item"><span>Tickets from £20</span></li>
+                </ul>
+                <p class="teaser__summary">See the legendary medieval tapestry at the British Museum — the only time it will have left Normandy in over 900 years.</p>
+              </div>
+              <span class="teaser__button">Find out more</span>
+            </div>
+            <div class="teaser__image-container">
+              <img src="../../Desktop/Exhibitions and events _ British Museum_files/Bayeux_Tapestry_teaser_1920x1080.jpg" alt="The Bayeux Tapestry">
+            </div>
+          </div>
+        </a>
+
+          </div><!-- /tab-panel proposed -->
+        </div><!-- /tab-group -->
+
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════════
+         3. EVENT TEASERS
+    ════════════════════════════════════════════════════ -->
+    <section class="proto-section">
+      <div class="wrap">
+
+        <div class="proto-section-title">
+          <h2 class="proto-h2">Event teasers</h2>
+          <span class="priority-badge priority-medium">Medium priority</span>
+        </div>
+        <p class="proto-desc">Heading should be read first (logical read order). Icon labels to have visible text equivalents for screen readers and AI crawlers.</p>
+
+        <div class="tab-group">
+          <div class="tab-bar">
+            <button class="tab-btn" data-tab="current">Current</button>
+            <button class="tab-btn is-active" data-tab="proposed">Proposed</button>
+          </div>
+
+          <div class="tab-panel" data-tab="current">
+
+        <ul class="l-grid l-grid--3col mb-grid">
+
+          <!-- Event 1: Family activity, free -->
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Kitagawa_Utamaro_Ryogoku_Bridge_teaser.jpg" alt="Samurai spectacular">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <div class="teaser__wrap">
+                      <div class="teaser__meta-wrap">
+                        <div class="teaser__meta">
+                          <div class="teaser__meta-item">
+                            <svg class="icon" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><path d="M9 2L2 7.5V16h4v-4.5h6V16h4V7.5L9 2z"/></svg>
+                            <span>Family activity</span>
+                          </div>
+                        </div>
+                        <ul class="teaser__meta">
+                          <li class="teaser__meta-item">
+                            <svg class="icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="14" height="13" rx="1"/><line x1="2" y1="7" x2="16" y2="7"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="12" y1="1" x2="12" y2="5"/></svg>
+                            <span>Various dates</span>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="teaser__defacer teaser__defacer--event">Free</div>
+                    </div>
+                    <h3 class="teaser__title"><span>Samurai spectacular</span></h3>
+                    <p class="teaser__summary">Bring your children aged 5 and under to our creative workshops to explore history and fantasy through art-making and sensory play.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Event 2: Guided tour, paid -->
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/japan-gallery-1920.jpg" alt="Japan: history and art guided tour">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <div class="teaser__wrap">
+                      <div class="teaser__meta-wrap">
+                        <div class="teaser__meta">
+                          <div class="teaser__meta-item">
+                            <svg class="icon" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><path d="M9 2L2 7.5V16h4v-4.5h6V16h4V7.5L9 2z"/></svg>
+                            <span>Guided tour</span>
+                          </div>
+                        </div>
+                        <ul class="teaser__meta">
+                          <li class="teaser__meta-item">
+                            <svg class="icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="14" height="13" rx="1"/><line x1="2" y1="7" x2="16" y2="7"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="12" y1="1" x2="12" y2="5"/></svg>
+                            <span>Various dates</span>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="teaser__defacer teaser__defacer--event" style="background:#000; border-color:#5c5c5c; color:#fff; font-size:0.65rem;">Book<br>now</div>
+                    </div>
+                    <h3 class="teaser__title"><span>Japan: history and art</span></h3>
+                    <p class="teaser__summary">Explore 3,000 years of Japanese history and culture through the British Museum's outstanding collection of Japanese art and objects.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Event 3: Tour, free -->
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/lgbtq-tour-1920.jpg" alt="LGBTQ+ objects and histories">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <div class="teaser__wrap">
+                      <div class="teaser__meta-wrap">
+                        <div class="teaser__meta">
+                          <div class="teaser__meta-item">
+                            <svg class="icon" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><path d="M9 2L2 7.5V16h4v-4.5h6V16h4V7.5L9 2z"/></svg>
+                            <span>Guided tour</span>
+                          </div>
+                        </div>
+                        <ul class="teaser__meta">
+                          <li class="teaser__meta-item">
+                            <svg class="icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="14" height="13" rx="1"/><line x1="2" y1="7" x2="16" y2="7"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="12" y1="1" x2="12" y2="5"/></svg>
+                            <span>Fri 20 Jun 2025</span>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="teaser__defacer teaser__defacer--event">Free</div>
+                    </div>
+                    <h3 class="teaser__title"><span>LGBTQ+ objects and histories</span></h3>
+                    <p class="teaser__summary">Discover stories of LGBTQ+ lives across time and cultures, exploring the collection's rich connections to queer history and identity.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+          </div><!-- /tab-panel current -->
+
+          <div class="tab-panel is-active" data-tab="proposed">
+
+        <ul class="l-grid l-grid--3col">
+
+          <!-- Event 1 -->
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Kitagawa_Utamaro_Ryogoku_Bridge_teaser.jpg" alt="Samurai spectacular">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title"><span>Samurai spectacular</span></h3>
+                    <ul class="teaser__meta" style="margin-bottom:12px;">
+                      <li class="teaser__meta-item"><span>Family activity · Various dates · Free</span></li>
+                    </ul>
+                    <p class="teaser__summary">Bring your children aged 5 and under to our creative workshops to explore history and fantasy through art-making and sensory play.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Event 2 -->
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/japan-gallery-1920.jpg" alt="Japan: history and art guided tour">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title"><span>Japan: history and art</span></h3>
+                    <ul class="teaser__meta" style="margin-bottom:12px;">
+                      <li class="teaser__meta-item"><span>Guided tour · Various dates · £14 per person</span></li>
+                    </ul>
+                    <p class="teaser__summary">Explore 3,000 years of Japanese history and culture through the British Museum's outstanding collection of Japanese art and objects.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Event 3 -->
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/lgbtq-tour-1920.jpg" alt="LGBTQ+ objects and histories">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title"><span>LGBTQ+ objects and histories</span></h3>
+                    <ul class="teaser__meta" style="margin-bottom:12px;">
+                      <li class="teaser__meta-item"><span>Guided tour · Fri 20 Jun 2025 · Free</span></li>
+                    </ul>
+                    <p class="teaser__summary">Discover stories of LGBTQ+ lives across time and cultures, exploring the collection's rich connections to queer history and identity.</p>
+                  </div>
+                  <span class="teaser__button">Book now</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+          </div><!-- /tab-panel proposed -->
+        </div><!-- /tab-group -->
+
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════════
+         3. YOU MAY ALSO BE INTERESTED IN
+    ════════════════════════════════════════════════════ -->
+    <section class="proto-section">
+      <div class="wrap">
+
+        <div class="proto-section-title">
+          <h2 class="proto-h2">"You may also be interested in"</h2>
+          <span class="priority-badge priority-high">High priority</span>
+        </div>
+        <p class="proto-desc">Mixed content types currently look disorganised. Proposed: consistent format — image, content category, title, copy, CTA — across all node types.</p>
+
+        <div class="tab-group">
+          <div class="tab-bar">
+            <button class="tab-btn" data-tab="current">Current</button>
+            <button class="tab-btn is-active" data-tab="proposed">Proposed</button>
+          </div>
+
+          <div class="tab-panel" data-tab="current">
+
+        <ul class="l-grid l-grid--3col mb-grid">
+
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/enlightenment-gallery-1920.jpg" alt="Past exhibitions">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title"><span>Past exhibitions</span></h3>
+                    <p class="teaser__summary">Take a look at our past exhibitions and enjoy the articles, videos and image galleries still available to view online.</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/tour-group-mexico-around-the-world-1920.jpg" alt="UK touring exhibitions">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title"><span>UK touring exhibitions and loans</span></h3>
+                    <p class="teaser__summary">Discover how the British Museum works with UK museums, galleries and communities to share the collection with as many people as possible.</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Pharaoh_installation_NGV_teaser.jpg" alt="International touring exhibitions">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <h3 class="teaser__title"><span>International touring exhibitions</span></h3>
+                    <p class="teaser__summary">The British Museum partners with museums worldwide to share the collection with international audiences.</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+          </div><!-- /tab-panel current -->
+
+          <div class="tab-panel is-active" data-tab="proposed">
+          <span class="label-desc">Image · Content category · Title · Description · CTA</span>
+
+        <ul class="l-grid l-grid--3col">
+
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/enlightenment-gallery-1920.jpg" alt="Past exhibitions">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <ul class="teaser__meta" style="margin-bottom:8px;">
+                      <li class="teaser__meta-item"><span>Gallery</span></li>
+                    </ul>
+                    <h3 class="teaser__title"><span>Past exhibitions</span></h3>
+                    <p class="teaser__summary">Take a look at our past exhibitions and enjoy the articles, videos and image galleries still available to view online.</p>
+                  </div>
+                  <span class="teaser__button">Find out more</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/tour-group-mexico-around-the-world-1920.jpg" alt="UK touring exhibitions">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <ul class="teaser__meta" style="margin-bottom:8px;">
+                      <li class="teaser__meta-item"><span>Article</span></li>
+                    </ul>
+                    <h3 class="teaser__title"><span>UK touring exhibitions and loans</span></h3>
+                    <p class="teaser__summary">Discover how the British Museum works with UK museums, galleries and communities to share the collection with as many people as possible.</p>
+                  </div>
+                  <span class="teaser__button">Read more</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="teaser">
+              <div class="teaser__wrapper">
+                <div class="teaser__image-container">
+                  <img src="../../Desktop/Exhibitions and events _ British Museum_files/Pharaoh_installation_NGV_teaser.jpg" alt="International touring exhibitions">
+                </div>
+                <div class="teaser__content">
+                  <div class="teaser__content-push">
+                    <ul class="teaser__meta" style="margin-bottom:8px;">
+                      <li class="teaser__meta-item"><span>Programme</span></li>
+                    </ul>
+                    <h3 class="teaser__title"><span>International touring exhibitions</span></h3>
+                    <p class="teaser__summary">The British Museum partners with museums worldwide to share the collection with international audiences.</p>
+                  </div>
+                  <span class="teaser__button">Find out more</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+          </div><!-- /tab-panel proposed -->
+        </div><!-- /tab-group -->
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top: 1px solid rgba(255,255,255,0.1);">
+    <div class="wrap" style="padding-top:32px; padding-bottom:32px; font-size:0.6111rem; font-weight:500; color:rgba(255,255,255,0.3);">
+      British Museum · Reworking of teasers v2 · Sensitive · 6 January 2026
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('.tab-group');
+        const tab = btn.dataset.tab;
+        group.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tab === tab));
+        group.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('is-active', p.dataset.tab === tab));
+      });
+    });
+  </script>
+
+</body>
+</html>
